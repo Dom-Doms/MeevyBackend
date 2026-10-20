@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>it.domrita</groupId>
-    <artifactId>mivy-backend</artifactId>
+    <artifactId>meevy-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>MivyBackend</name>
-    <description>MivyBackend</description>
+    <name>MeevyBackend</name>
+    <description>MeevyBackend</description>
     <url/>
     <licenses>
         <license/>

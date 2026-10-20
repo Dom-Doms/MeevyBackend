@@ -1,10 +1,10 @@
-package it.domrita.mivy;
+package it.domrita.meevy;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MivyBackendApplicationTests {
+class MeevyBackendApplicationTests {
 
     @Test
     void contextLoads() {
