@@ -8,11 +8,21 @@ import it.domrita.meevy.role.AccountStatus ;
 import java.time.Instant;
 
 @Entity
+
+/*
+ * Vincolo di unicità sull'email.
+ *
+ * Impedisce che due utenti vengano registrati
+ * con lo stesso indirizzo email.
+ *
+ * "uk_user_email" è il nome del vincolo UNIQUE
+ * definito nel database.
+ */
 @Table(
-        name = "users",
+        name = "user",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name = "uk_users_email",
+                        name = "uk_user_email",
                         columnNames = "email"
                 )
         }
@@ -60,13 +70,13 @@ public class User {
      * Non è univoco: più utenti possono naturalmente
      * avere lo stesso nome e cognome.
      */
-    @Column(name = "first_name", nullable = false, length = 100)
+    @Column(name = "first_name", nullable = true, length = 100)
     private String firstName;
 
     /*
      * Cognome reale dell'utente.
      */
-    @Column(name = "last_name", nullable = false, length = 100)
+    @Column(name = "last_name", nullable = true, length = 100)
     private String lastName;
 
     /*
