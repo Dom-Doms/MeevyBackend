@@ -20,7 +20,7 @@ public class PasswordConfig {
      *
      * Il Bean viene utilizzato dal UserService durante
      * la registrazione per generare l'hash della password
-     * e, successivamente, durante il login per verificarla.
+     * e, successivamente, durante il login per verificarla.git 
      *
      * Il DelegatingPasswordEncoder utilizza bcrypt come
      * algoritmo predefinito per i nuovi hash e permette
