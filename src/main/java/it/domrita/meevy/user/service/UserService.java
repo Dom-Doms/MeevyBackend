@@ -1,6 +1,7 @@
 
 package it.domrita.meevy.user.service;
 
+import it.domrita.meevy.user.dto.LoginRequest;
 import it.domrita.meevy.user.dto.RegisterRequest;
 import it.domrita.meevy.user.dto.RegisterResponse;
 import it.domrita.meevy.user.exception.EmailAlreadyRegisteredException;
@@ -9,10 +10,12 @@ import it.domrita.meevy.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Locale;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -70,4 +73,47 @@ public class UserService {
                 savedUser.getLastName()
         );
     }
+
+
+    /*
+     * Verifica le credenziali inserite durante il login.
+     *
+     * Se sono corrette e l'account è attivo,
+     * restituisce l'utente autenticato.
+     *
+     * La generazione dei token sarà gestita
+     * separatamente dal TokenService.
+     */
+    public User authenticate(LoginRequest request) {
+
+        // Normalizza l'email come nella registrazione.
+        String email = request.email()
+                .trim()
+                .toLowerCase(Locale.ROOT);
+
+        // Cerca l'utente nel database.
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isEmpty()) {
+            throw new BadCredentialsException("Credenziali non valide.");
+        }
+
+        User user = optionalUser.get();
+
+        // Confronta la password inserita con l'hash salvato.
+        if (!passwordEncoder.matches(
+                request.password(),
+                user.getPasswordHash()
+        )) {
+            throw new BadCredentialsException("Credenziali non valide.");
+        }
+
+        // Gli account non attivi non possono autenticarsi.
+        if (user.getAccountStatus() != it.domrita.meevy.role.AccountStatus.ACTIVE) {
+            throw new BadCredentialsException("Credenziali non valide.");
+        }
+
+        return user;
+    }
+
 }

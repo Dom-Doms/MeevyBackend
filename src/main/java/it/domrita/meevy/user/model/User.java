@@ -19,7 +19,7 @@ import java.time.Instant;
  * definito nel database.
  */
 @Table(
-        name = "user",
+        name = "\"user\"",
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_user_email",

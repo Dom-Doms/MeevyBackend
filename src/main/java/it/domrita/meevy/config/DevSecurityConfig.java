@@ -32,9 +32,9 @@ public class DevSecurityConfig {
          * Non deve essere utilizzata sul server pubblico.
          */
                 .csrf(csrf -> csrf.ignoringRequestMatchers( //protezione di Spring Security, escludiamo gli endpoint di prova
-                        "/api/subjects",
-                        "/api/subjects/**",
-                        "/api/users/register"
+                        "/subject",
+                        "/subject/**",
+                        "/user/register"
                 ))
         // Disabilita i login predefiniti di Spring.
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -42,13 +42,13 @@ public class DevSecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/subjects",
-                                "/api/subjects/**"
+                                "/subject",
+                                "/subject/**"
                         ).permitAll() //le richieste con "permitAll() non richiedono autenticazione.
 
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/api/users/register"
+                                "/user/register"
                         ).permitAll()
 
                         .requestMatchers("/error").permitAll()
