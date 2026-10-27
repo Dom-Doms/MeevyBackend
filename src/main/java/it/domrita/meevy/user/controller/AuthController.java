@@ -3,6 +3,7 @@ package it.domrita.meevy.user.controller;
 
 import it.domrita.meevy.user.dto.LoginRequest;
 import it.domrita.meevy.user.dto.LoginResponse;
+import it.domrita.meevy.user.dto.LogoutRequest;
 import it.domrita.meevy.user.dto.RefreshRequest;
 import it.domrita.meevy.user.service.AuthService;
 
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 /*
@@ -51,4 +53,20 @@ public class AuthController {
     ) {
         return authService.refresh(request);
     }
+
+
+    /*
+     * POST /auth/logout
+     *
+     * Revoca il refresh token del dispositivo corrente.
+     * Restituisce 204 No Content.
+     */
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(
+            @Valid @RequestBody LogoutRequest request
+    ) {
+        authService.logout(request);
+    }
+
 }

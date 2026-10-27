@@ -66,10 +66,12 @@ public class SecurityConfig {
                                 "/auth/login"
                         ).permitAll()
 
-                        // Rinnovo dell'access token.
+                        // Rinnovo e terminazione della sessione.
+                        // Non richiedono un access JWT valido.
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/auth/refresh"
+                                "/auth/refresh",
+                                "/auth/logout"
                         ).permitAll()
 
                         // Permette di restituire gli errori HTTP.

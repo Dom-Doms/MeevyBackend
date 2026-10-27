@@ -3,6 +3,7 @@ package it.domrita.meevy.user.service;
 
 import it.domrita.meevy.user.dto.LoginRequest;
 import it.domrita.meevy.user.dto.LoginResponse;
+import it.domrita.meevy.user.dto.LogoutRequest;
 import it.domrita.meevy.user.dto.RefreshRequest;
 import it.domrita.meevy.user.exception.InvalidRefreshTokenException;
 import it.domrita.meevy.user.model.RefreshToken;
@@ -153,5 +154,42 @@ public class AuthService {
                 TokenService.ACCESS_TOKEN_DURATION.toSeconds()
         );
     }
+
+
+
+    /*
+     * Termina una sessione di autenticazione.
+     *
+     * Riceve il refresh token del dispositivo,
+     * cerca la relativa sessione nel database
+     * e la revoca.
+     *
+     * Il metodo è idempotente: chiamarlo più volte
+     * con lo stesso token non genera errori.
+     */
+    @Transactional
+    public void logout(LogoutRequest request) {
+
+        // Calcola l'hash del refresh token ricevuto.
+        String tokenHash = tokenService.hashRefreshToken(
+                request.refreshToken()
+        );
+
+        /*
+         * Cerca la sessione applicando un lock.
+         *
+         * Il lock coordina le operazioni concorrenti
+         * che utilizzano la stessa riga del database.
+         */
+        refreshTokenRepository
+                .findByTokenHashForUpdate(tokenHash)
+                .ifPresent(session -> {
+
+                    // Revoca la sessione, se non è già revocata.
+                    session.revoke(Instant.now());
+
+                });
+    }
+
 
 }
