@@ -3,6 +3,7 @@ package it.domrita.meevy.common.exception;
 
 import it.domrita.meevy.user.exception.EmailAlreadyRegisteredException;
 
+import it.domrita.meevy.user.exception.InvalidRefreshTokenException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -99,6 +100,22 @@ public class GlobalExceptionHandler {
                 "DATA_CONFLICT",
                 "I dati inseriti violano un vincolo del database."
         );
+    }
+
+    /*
+     * Gestisce i tentativi di rinnovo con
+     * refresh token non validi o scaduti.
+     */
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidRefreshToken(
+            InvalidRefreshTokenException ex
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of(
+                        "code", "INVALID_REFRESH_TOKEN",
+                        "message", ex.getMessage()
+                ));
     }
 
     /*

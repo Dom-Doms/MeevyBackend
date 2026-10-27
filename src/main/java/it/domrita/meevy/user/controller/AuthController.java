@@ -3,6 +3,7 @@ package it.domrita.meevy.user.controller;
 
 import it.domrita.meevy.user.dto.LoginRequest;
 import it.domrita.meevy.user.dto.LoginResponse;
+import it.domrita.meevy.user.dto.RefreshRequest;
 import it.domrita.meevy.user.service.AuthService;
 
 import jakarta.validation.Valid;
@@ -36,5 +37,18 @@ public class AuthController {
             @Valid @RequestBody LoginRequest request
     ) {
         return authService.login(request);
+    }
+
+    /*
+     * POST /auth/refresh
+     *
+     * Riceve il refresh token e restituisce
+     * un nuovo access JWT e un nuovo refresh token.
+     */
+    @PostMapping("/refresh")
+    public LoginResponse refresh(
+            @Valid @RequestBody RefreshRequest request
+    ) {
+        return authService.refresh(request);
     }
 }

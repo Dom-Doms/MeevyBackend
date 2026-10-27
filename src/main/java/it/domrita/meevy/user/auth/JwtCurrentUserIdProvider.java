@@ -2,6 +2,7 @@
 package it.domrita.meevy.user.auth;
 
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
@@ -25,14 +26,32 @@ public class JwtCurrentUserIdProvider
                 SecurityContextHolder.getContext()
                         .getAuthentication();
 
+        // Controlla che l'utente sia autenticato tramite JWT.
         if (!(authentication instanceof JwtAuthenticationToken jwtAuth)) {
-            throw new IllegalStateException(
+            throw new BadCredentialsException(
                     "Nessun utente JWT autenticato."
             );
         }
 
-        return Long.valueOf(
-                jwtAuth.getToken().getSubject() //TODO da verificare questo errore
-        );
+        // Recupera l'ID dell'utente dal campo "sub" del JWT.
+        String subject = jwtAuth.getToken().getSubject();
+
+        // Verifica che l'identificativo sia presente.
+        if (subject == null || subject.isBlank()) {
+            throw new BadCredentialsException(
+                    "JWT senza identificativo utente."
+            );
+        }
+
+        // Converte l'identificativo da String a Long.
+        try {
+            return Long.valueOf(subject);
+
+        } catch (NumberFormatException ex) {
+            throw new BadCredentialsException(
+                    "Identificativo utente non valido.",
+                    ex
+            );
+        }
     }
 }
