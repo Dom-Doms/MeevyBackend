@@ -55,8 +55,9 @@ public class SubjectService {
 
     //Recupera una materia tramite l'id, verificando la proprietà tramite l'id dell'utente
 
-    //converte un Entity in un DTO
-    public SubjectResponse toResponse(Subject subject) {
+    //Converte un Entity in un DTO, ovvero riceve un oggetto Subject contenuto nel backend e lo
+    //trasforma in un SubjectResponse contenente solo le informazioni utili che vogliamo inviare a Flutter
+    private SubjectResponse toResponse(Subject subject) {
         return new SubjectResponse(
                 subject.getId(), subject.getName()
         );
