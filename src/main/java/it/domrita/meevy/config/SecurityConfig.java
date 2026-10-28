@@ -57,7 +57,7 @@ public class SecurityConfig {
                         // Registrazione senza autenticazione.
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/users/register"
+                                "/user/register"
                         ).permitAll()
 
                         // Login tramite email e password.
