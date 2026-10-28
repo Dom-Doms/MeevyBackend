@@ -16,6 +16,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import it.domrita.meevy.subject.exception.SubjectNotFoundException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -116,6 +117,18 @@ public class GlobalExceptionHandler {
                         "code", "INVALID_REFRESH_TOKEN",
                         "message", ex.getMessage()
                 ));
+    }
+
+    //Gestisce la richiesta di na materia inesistente o non appartenente all'utente
+    @ExceptionHandler(SubjectNotFoundException.class)
+    public ProblemDetail handleSubjectNotFound(
+            SubjectNotFoundException ex
+    ){
+        return createProblem(
+                HttpStatus.NOT_FOUND,
+                "SUBJECT_NOT_FOUND",
+                ex.getMessage()
+        );
     }
 
     /*
