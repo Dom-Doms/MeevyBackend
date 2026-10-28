@@ -1,0 +1,13 @@
+.git
+.github
+.idea
+.vscode
+target
+build
+.env
+.env.*
+*.log
+.mvn
+mvnw
+mvnw.cmd
+*.md
