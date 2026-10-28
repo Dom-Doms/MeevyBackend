@@ -19,7 +19,7 @@ services:
 
   backend:
     build:
-      context: ../../AppData/Local/Temp/Rar$DRa37880.16441.rartemp/meevy-docker-package
+      context: .
       dockerfile: Dockerfile
     restart: unless-stopped
     depends_on:
