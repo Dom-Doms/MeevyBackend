@@ -6,7 +6,7 @@ import it.domrita.meevy.subject.dto.SubjectResponse;
 import it.domrita.meevy.subject.repository.SubjectRepository;
 import it.domrita.meevy.subject.model.Subject;
 
-import it.domrita.meevy.user.auth.CurrentUserIdProvider;
+import it.domrita.meevy.auth.repository.CurrentUserIdProvider;
 import it.domrita.meevy.user.model.User;
 import it.domrita.meevy.user.repository.UserRepository;
 

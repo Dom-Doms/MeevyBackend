@@ -1,6 +1,7 @@
 
-package it.domrita.meevy.user.model;
+package it.domrita.meevy.auth.model;
 
+import it.domrita.meevy.user.model.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;

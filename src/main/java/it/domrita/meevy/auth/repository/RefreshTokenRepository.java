@@ -1,7 +1,7 @@
 
-package it.domrita.meevy.user.repository;
+package it.domrita.meevy.auth.repository;
 
-import it.domrita.meevy.user.model.RefreshToken;
+import it.domrita.meevy.auth.model.RefreshToken;
 
 import jakarta.persistence.LockModeType;
 

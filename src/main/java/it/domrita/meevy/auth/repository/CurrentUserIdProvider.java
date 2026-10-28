@@ -1,4 +1,4 @@
-package it.domrita.meevy.user.auth;
+package it.domrita.meevy.auth.repository;
 
  /*
          * Attualmente non abbiamo implementato JWT, quindi

@@ -1,5 +1,5 @@
 
-package it.domrita.meevy.user.dto;
+package it.domrita.meevy.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

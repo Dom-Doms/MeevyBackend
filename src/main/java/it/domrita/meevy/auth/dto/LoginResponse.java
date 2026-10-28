@@ -1,5 +1,5 @@
 
-package it.domrita.meevy.user.dto;
+package it.domrita.meevy.auth.dto;
 
 /*
  * Risposta restituita dopo un login riuscito.

@@ -1,5 +1,5 @@
 
-package it.domrita.meevy.user.exception;
+package it.domrita.meevy.auth.exception;
 
 /*
  * Segnala che un refresh token non può essere

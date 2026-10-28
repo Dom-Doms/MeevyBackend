@@ -1,6 +1,7 @@
 
-package it.domrita.meevy.user.auth;
+package it.domrita.meevy.auth.provider;
 
+import it.domrita.meevy.auth.repository.CurrentUserIdProvider;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;

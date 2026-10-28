@@ -1,5 +1,5 @@
 
-package it.domrita.meevy.user.service;
+package it.domrita.meevy.auth.service;
 
 import it.domrita.meevy.user.model.User;
 

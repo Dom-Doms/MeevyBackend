@@ -1,11 +1,11 @@
 
-package it.domrita.meevy.user.controller;
+package it.domrita.meevy.auth.controller;
 
-import it.domrita.meevy.user.dto.LoginRequest;
-import it.domrita.meevy.user.dto.LoginResponse;
-import it.domrita.meevy.user.dto.LogoutRequest;
-import it.domrita.meevy.user.dto.RefreshRequest;
-import it.domrita.meevy.user.service.AuthService;
+import it.domrita.meevy.auth.dto.LoginRequest;
+import it.domrita.meevy.auth.dto.LoginResponse;
+import it.domrita.meevy.auth.dto.LogoutRequest;
+import it.domrita.meevy.auth.dto.RefreshRequest;
+import it.domrita.meevy.auth.service.AuthService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,22 +1,28 @@
 
-package it.domrita.meevy.user.service;
+package it.domrita.meevy.auth.service;
 
-import it.domrita.meevy.user.dto.LoginRequest;
-import it.domrita.meevy.user.dto.LoginResponse;
-import it.domrita.meevy.user.dto.LogoutRequest;
-import it.domrita.meevy.user.dto.RefreshRequest;
-import it.domrita.meevy.user.exception.InvalidRefreshTokenException;
-import it.domrita.meevy.user.model.RefreshToken;
+import it.domrita.meevy.auth.dto.LoginRequest;
+import it.domrita.meevy.auth.dto.LoginResponse;
+import it.domrita.meevy.auth.dto.LogoutRequest;
+import it.domrita.meevy.auth.dto.RefreshRequest;
+import it.domrita.meevy.auth.exception.InvalidRefreshTokenException;
+import it.domrita.meevy.auth.model.RefreshToken;
 import it.domrita.meevy.user.model.User;
-import it.domrita.meevy.user.repository.RefreshTokenRepository;
+import it.domrita.meevy.auth.repository.RefreshTokenRepository;
 
+import it.domrita.meevy.user.repository.UserRepository;
+import it.domrita.meevy.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.Locale;
+import java.util.Optional;
 
 /*
  * Coordina il login dell'utente.
@@ -32,7 +38,8 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserService userService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -40,7 +47,7 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
 
         // Verifica email, password e stato dell'account.
-        User user = userService.authenticate(request);
+        User user = authenticate(request);
 
         // Genera un refresh token casuale.
         String refreshToken = tokenService.generateRefreshToken();
@@ -189,6 +196,48 @@ public class AuthService {
                     session.revoke(Instant.now());
 
                 });
+    }
+
+
+    /*
+     * Verifica le credenziali inserite durante il login.
+     *
+     * Se sono corrette e l'account è attivo,
+     * restituisce l'utente autenticato.
+     *
+     * La generazione dei token sarà gestita
+     * separatamente dal TokenService.
+     */
+    public User authenticate(LoginRequest request) {
+
+        // Normalizza l'email come nella registrazione.
+        String email = request.email()
+                .trim()
+                .toLowerCase(Locale.ROOT);
+
+        // Cerca l'utente nel database.
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isEmpty()) {
+            throw new BadCredentialsException("Credenziali non valide.");
+        }
+
+        User user = optionalUser.get();
+
+        // Confronta la password inserita con l'hash salvato.
+        if (!passwordEncoder.matches(
+                request.password(),
+                user.getPasswordHash()
+        )) {
+            throw new BadCredentialsException("Credenziali non valide.");
+        }
+
+        // Gli account non attivi non possono autenticarsi.
+        if (user.getAccountStatus() != it.domrita.meevy.role.AccountStatus.ACTIVE) {
+            throw new BadCredentialsException("Credenziali non valide.");
+        }
+
+        return user;
     }
 
 

@@ -3,7 +3,7 @@ package it.domrita.meevy.common.exception;
 
 import it.domrita.meevy.user.exception.EmailAlreadyRegisteredException;
 
-import it.domrita.meevy.user.exception.InvalidRefreshTokenException;
+import it.domrita.meevy.auth.exception.InvalidRefreshTokenException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
