@@ -381,6 +381,28 @@ public class PersonalPomodoroSession {
         this.status = PersonalPomodoroStatus.CANCELLED;
     }
 
+
+    /*
+     * Modifica la configurazione e la materia
+     * di una sessione non ancora avviata.
+     *
+     * Dopo l'avvio, la configurazione non può cambiare.
+     */
+    public void updateConfiguration(
+            Subject subject,
+            PomodoroSettings settings
+    ) {
+        requireStatus(PersonalPomodoroStatus.READY);
+
+        Objects.requireNonNull(subject);
+        Objects.requireNonNull(settings);
+
+        this.subject = subject;
+        this.studyDurationSeconds = settings.studyDurationSeconds();
+        this.breakDurationSeconds = settings.breakDurationSeconds();
+        this.targetDurationSeconds = settings.targetDurationSeconds();
+    }
+
     /*
      * Imposta automaticamente la data di creazione
      * prima del primo inserimento nel database.

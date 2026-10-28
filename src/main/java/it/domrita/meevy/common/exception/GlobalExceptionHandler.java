@@ -147,4 +147,50 @@ public class GlobalExceptionHandler {
 
         return problem;
     }
+    /*
+     * POMODORO
+     */
+
+    /*
+     * La sessione non esiste o non appartiene all'utente.
+     */
+    @ExceptionHandler(PersonalPomodoroNotFoundException.class)
+    public ProblemDetail handlePomodoroNotFound(
+            PersonalPomodoroNotFoundException ex
+    ) {
+        return createProblem(
+                HttpStatus.NOT_FOUND,
+                "POMODORO_NOT_FOUND",
+                ex.getMessage()
+        );
+    }
+
+    /*
+     * Esiste già una sessione personale non terminata.
+     */
+    @ExceptionHandler(PersonalPomodoroAlreadyActiveException.class)
+    public ProblemDetail handlePomodoroAlreadyActive(
+            PersonalPomodoroAlreadyActiveException ex
+    ) {
+        return createProblem(
+                HttpStatus.CONFLICT,
+                "POMODORO_ALREADY_ACTIVE",
+                ex.getMessage()
+        );
+    }
+
+    /*
+     * Operazione non consentita nello stato corrente.
+     */
+    @ExceptionHandler(PersonalPomodoroInvalidStateException.class)
+    public ProblemDetail handlePomodoroInvalidState(
+            PersonalPomodoroInvalidStateException ex
+    ) {
+        return createProblem(
+                HttpStatus.CONFLICT,
+                "POMODORO_INVALID_STATE",
+                ex.getMessage()
+        );
+    }
+
 }
