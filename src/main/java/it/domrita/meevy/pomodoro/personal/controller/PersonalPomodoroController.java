@@ -17,13 +17,10 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Optional;
 
-/*
- * Espone le API REST per gestire
- * le sessioni Pomodoro personali.
- *
- * Delega al Service le regole di dominio,
- * le autorizzazioni e la persistenza.
- */
+
+  //Espone le API REST per gestire  le sessioni Pomodoro personali.
+
+
 @RestController
 @RequestMapping("/pomodoro-personal-sessions")
 @RequiredArgsConstructor
@@ -34,7 +31,7 @@ public class PersonalPomodoroController {
     /*
      * Crea una sessione in stato READY.
      *
-     * POST /api/pomodoro-sessions
+     * POST /pomodoro-personal-sessions
      */
     @PostMapping
     public ResponseEntity<PersonalPomodoroResponse> create(
@@ -46,6 +43,8 @@ public class PersonalPomodoroController {
                         request.toSettings()
                 );
 
+
+        // utile ma non necessario, UTILIZZO: per ritornare nella risposta direttamente l'endpoint per recuperare la sessione
         URI location = URI.create(
                 "/pomodoro-personal-sessions/" + session.getId()
         );
@@ -62,9 +61,9 @@ public class PersonalPomodoroController {
      * Modifica la configurazione di una sessione READY.
      * La request deve contenere tutti i campi.
      *
-     * PATCH /api/pomodoro-sessions/{id}
+     * PATCH /pomodoro-personal-sessions/{id}/update
      */
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/update")
     public ResponseEntity<PersonalPomodoroResponse> update(
             @PathVariable Long id,
             @Valid @RequestBody PersonalPomodoroRequest request
@@ -84,7 +83,7 @@ public class PersonalPomodoroController {
     /*
      * Avvia una sessione READY.
      *
-     * POST /api/pomodoro-sessions/{id}/start
+     * POST /pomodoro-personal-sessions/{id}/start
      */
     @PostMapping("/{id}/start")
     public ResponseEntity<PersonalPomodoroResponse> start(
@@ -101,7 +100,7 @@ public class PersonalPomodoroController {
     /*
      * Sospende manualmente la sessione.
      *
-     * POST /api/pomodoro-sessions/{id}/pause
+     * POST /pomodoro-personal-sessions/{id}/pause
      */
     @PostMapping("/{id}/pause")
     public ResponseEntity<PersonalPomodoroResponse> pause(
@@ -118,7 +117,7 @@ public class PersonalPomodoroController {
     /*
      * Riprende la sessione sospesa.
      *
-     * POST /api/pomodoro-sessions/{id}/resume
+     * POST /pomodoro-personal-sessions/{id}/resume
      */
     @PostMapping("/{id}/resume")
     public ResponseEntity<PersonalPomodoroResponse> resume(
@@ -135,7 +134,7 @@ public class PersonalPomodoroController {
     /*
      * Completa la sessione, anche anticipatamente.
      *
-     * POST /api/pomodoro-sessions/{id}/complete
+     * POST /pomodoro-personal-sessions/{id}/complete
      */
     @PostMapping("/{id}/complete")
     public ResponseEntity<PersonalPomodoroResponse> complete(
@@ -152,7 +151,7 @@ public class PersonalPomodoroController {
     /*
      * Annulla la sessione senza contabilizzare studio.
      *
-     * POST /api/pomodoro-sessions/{id}/cancel
+     * POST /pomodoro-personal-sessions/{id}/cancel
      */
     @PostMapping("/{id}/cancel")
     public ResponseEntity<PersonalPomodoroResponse> cancel(
@@ -167,9 +166,9 @@ public class PersonalPomodoroController {
     }
 
     /*
-     * Recupera la sessione non terminata dell'utente.
+     * Recupera la sessione in corso dell'utente autenticato.
      *
-     * GET /api/pomodoro-sessions/current
+     * GET /pomodoro-personal-sessions/current
      *
      * Restituisce 204 se non è presente.
      */
@@ -194,7 +193,7 @@ public class PersonalPomodoroController {
     /*
      * Recupera una sessione tramite ID.
      *
-     * GET /api/pomodoro-sessions/{id}
+     * GET /pomodoro-personal-sessions/{id}
      */
     @GetMapping("/{id}")
     public ResponseEntity<PersonalPomodoroResponse> getById(
@@ -209,9 +208,9 @@ public class PersonalPomodoroController {
     }
 
     /*
-     * Recupera lo storico paginato dell'utente.
+     * Recupera lo storico delle sessioni dell'utente (TODO per aggiungere le statistiche ).
      *
-     * GET /api/pomodoro-sessions?page=0&size=20
+     * GET /pomodoro-personal-sessions?page=0&size=20
      */
     @GetMapping
     public ResponseEntity<PersonalPomodoroPageResponse> listSessions(

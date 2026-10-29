@@ -28,10 +28,6 @@ import java.util.Optional;
 
 /*
  * Gestisce le sessioni Pomodoro personali.
- *
- * Verifica la proprietà delle risorse, coordina
- * le operazioni sul dominio e la persistenza.
- *
  * Le transizioni di stato restano responsabilità
  * di PersonalPomodoroSession.
  */
@@ -104,9 +100,9 @@ public class PersonalPomodoroService {
         return pomodoroRepository.saveAndFlush(session);
     }
 
-    /*
-     * Modifica materia e durate di una sessione READY.
-     */
+
+     //Modifica materia e durate di una sessione READY.
+
     public PersonalPomodoroSession updateReady(
             Long sessionId,
             Long subjectId,
@@ -126,9 +122,9 @@ public class PersonalPomodoroService {
         return session;
     }
 
-    /*
-     * Avvia una sessione READY.
-     */
+
+     // Avvia una sessione READY e controlla prima lo user autenticato.
+
     public PersonalPomodoroSession start(Long sessionId) {
         PersonalPomodoroSession session = requireOwnedSession(
                 sessionId,
@@ -142,9 +138,9 @@ public class PersonalPomodoroService {
         return session;
     }
 
-    /*
-     * Sospende manualmente una sessione RUNNING.
-     */
+
+     //Sospende manualmente una sessione RUNNING.
+
     public PersonalPomodoroSession pause(Long sessionId) {
         PersonalPomodoroSession session = requireOwnedSession(
                 sessionId,
@@ -161,9 +157,9 @@ public class PersonalPomodoroService {
         return session;
     }
 
-    /*
-     * Riprende una sessione PAUSED.
-     */
+
+     //Riprende una sessione PAUSED.
+
     public PersonalPomodoroSession resume(Long sessionId) {
         PersonalPomodoroSession session = requireOwnedSession(
                 sessionId,
@@ -200,9 +196,9 @@ public class PersonalPomodoroService {
         return session;
     }
 
-    /*
-     * Annulla una sessione senza contabilizzare studio.
-     */
+
+     // Annulla una sessione senza contabilizzare studio.
+
     public PersonalPomodoroSession cancel(Long sessionId) {
         PersonalPomodoroSession session = requireOwnedSession(
                 sessionId,
@@ -264,16 +260,14 @@ public class PersonalPomodoroService {
     }
 
 
-    /*
-     * Recupera lo storico paginato.
-     *
-     * Riconcilia le eventuali sessioni scadute
-     * prima di restituire i risultati.
-     */
+
+     // Recupera lo storico paginato.
+
     @Transactional
     public Page<PersonalPomodoroSession> listSessions(
             Pageable pageable
     ) {
+        //La Repository recupera le sessioni dell'utente, dalla più recente
         Page<PersonalPomodoroSession> sessions =
                 pomodoroRepository.findByUser_IdOrderByCreatedAtDesc(
                         currentUserIdProvider.getCurrentUserId(),
@@ -337,10 +331,9 @@ public class PersonalPomodoroService {
         }
     }
 
-    /*
-     * Traduce gli errori delle transizioni del dominio
-     * in eccezioni utilizzabili dalle API REST.
-     */
+
+     // Traduce gli errori delle transizioni in eccezioni utilizzabili dalle API REST.
+
     private void applyTransition(Runnable transition) {
         try {
             transition.run();

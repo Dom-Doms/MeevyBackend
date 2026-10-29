@@ -32,8 +32,7 @@ public record PersonalPomodoroRequest(
 ) {
 
     /*
-     * Converte i dati ricevuti nella configurazione
-     * utilizzata dalla logica di dominio.
+     * Converte i dati ricevuti in modo da poterli utilizzare nel codice
      */
     public PomodoroSettings toSettings() {
         return new PomodoroSettings(

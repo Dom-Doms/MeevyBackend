@@ -71,7 +71,7 @@ public record PersonalPomodoroResponse(
 
         /*
          * Quando la sessione è READY, il timer non è ancora
-         * partito, quindi non esiste una fase attiva.
+         * partito infatti non  esiste una fase attiva.
          *
          * Quando è terminata, non ci sono tempi residui.
          */
@@ -88,8 +88,7 @@ public record PersonalPomodoroResponse(
 
 
         /*
-         * Nelle sessioni terminate utilizziamo
-         * lo studio effettivamente contabilizzato.
+         * Le sessioni terminate con cancel non verranno contate ai fini delle statistiche
          * CANCELLED mantiene il valore zero.
          */
         long plannedStudy =
