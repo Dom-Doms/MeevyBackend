@@ -2,6 +2,9 @@
 package it.domrita.meevy.common.exception;
 
 import it.domrita.meevy.user.exception.EmailAlreadyRegisteredException;
+import it.domrita.meevy.pomodoro.personal.exception.PersonalPomodoroNotFoundException;
+import it.domrita.meevy.pomodoro.personal.exception.PersonalPomodoroAlreadyActiveException;
+import it.domrita.meevy.pomodoro.personal.exception.PersonalPomodoroInvalidStateException;
 
 import it.domrita.meevy.auth.exception.InvalidRefreshTokenException;
 import org.springframework.core.Ordered;
