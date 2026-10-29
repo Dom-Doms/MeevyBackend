@@ -2,8 +2,11 @@
 package it.domrita.meevy.common.exception;
 
 import it.domrita.meevy.user.exception.EmailAlreadyRegisteredException;
+import it.domrita.meevy.pomodoro.personal.exception.PersonalPomodoroNotFoundException;
+import it.domrita.meevy.pomodoro.personal.exception.PersonalPomodoroAlreadyActiveException;
+import it.domrita.meevy.pomodoro.personal.exception.PersonalPomodoroInvalidStateException;
 
-import it.domrita.meevy.user.exception.InvalidRefreshTokenException;
+import it.domrita.meevy.auth.exception.InvalidRefreshTokenException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,6 +19,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import it.domrita.meevy.subject.exception.SubjectNotFoundException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -118,6 +122,18 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    //Gestisce la richiesta di na materia inesistente o non appartenente all'utente
+    @ExceptionHandler(SubjectNotFoundException.class)
+    public ProblemDetail handleSubjectNotFound(
+            SubjectNotFoundException ex
+    ){
+        return createProblem(
+                HttpStatus.NOT_FOUND,
+                "SUBJECT_NOT_FOUND",
+                ex.getMessage()
+        );
+    }
+
     /*
      * Costruisce una risposta di errore uniforme.
      */
@@ -134,4 +150,50 @@ public class GlobalExceptionHandler {
 
         return problem;
     }
+    /*
+     * POMODORO
+     */
+
+    /*
+     * La sessione non esiste o non appartiene all'utente.
+     */
+    @ExceptionHandler(PersonalPomodoroNotFoundException.class)
+    public ProblemDetail handlePomodoroNotFound(
+            PersonalPomodoroNotFoundException ex
+    ) {
+        return createProblem(
+                HttpStatus.NOT_FOUND,
+                "POMODORO_NOT_FOUND",
+                ex.getMessage()
+        );
+    }
+
+    /*
+     * Esiste già una sessione personale non terminata.
+     */
+    @ExceptionHandler(PersonalPomodoroAlreadyActiveException.class)
+    public ProblemDetail handlePomodoroAlreadyActive(
+            PersonalPomodoroAlreadyActiveException ex
+    ) {
+        return createProblem(
+                HttpStatus.CONFLICT,
+                "POMODORO_ALREADY_ACTIVE",
+                ex.getMessage()
+        );
+    }
+
+    /*
+     * Operazione non consentita nello stato corrente.
+     */
+    @ExceptionHandler(PersonalPomodoroInvalidStateException.class)
+    public ProblemDetail handlePomodoroInvalidState(
+            PersonalPomodoroInvalidStateException ex
+    ) {
+        return createProblem(
+                HttpStatus.CONFLICT,
+                "POMODORO_INVALID_STATE",
+                ex.getMessage()
+        );
+    }
+
 }

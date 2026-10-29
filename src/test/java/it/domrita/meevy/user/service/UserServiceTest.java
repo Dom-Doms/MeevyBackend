@@ -1,30 +1,29 @@
 
 package it.domrita.meevy.user.service;
 
-import it.domrita.meevy.role.AccountStatus;
-import it.domrita.meevy.user.dto.LoginRequest;
+import it.domrita.meevy.user.dto.RegisterRequest;
+import it.domrita.meevy.user.dto.RegisterResponse;
+import it.domrita.meevy.user.exception.EmailAlreadyRegisteredException;
 import it.domrita.meevy.user.model.User;
 import it.domrita.meevy.user.repository.UserRepository;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /*
- * Test della verifica delle credenziali.
+ * Test unitari per la registrazione degli utenti.
  *
- * Non utilizza password reali e non si collega
- * al database: Repository ed Encoder sono simulati.
+ * Il database e il PasswordEncoder vengono simulati
+ * tramite Mockito.
  */
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -38,98 +37,92 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    /*
+     * Verifica che la registrazione:
+     * - normalizzi l'email;
+     * - codifichi la password;
+     * - salvi correttamente l'utente;
+     * - restituisca i dati previsti.
+     */
     @Test
-    void credenzialiCorretteAutenticanoUtente() {
+    void registrazioneValidaCreaUtente() {
 
-        LoginRequest request =
-                new LoginRequest("  DOM@EXAMPLE.COM  ", "password");
-
-        User user = new User(
-                "dom@example.com", "hash", null, null
+        RegisterRequest request = new RegisterRequest(
+                "  DOM@EXAMPLE.COM  ",
+                "password123",
+                "Dom",
+                "Rita"
         );
 
-        when(userRepository.findByEmail("dom@example.com"))
-                .thenReturn(Optional.of(user));
+        when(userRepository.existsByEmail("dom@example.com"))
+                .thenReturn(false);
 
-        when(passwordEncoder.matches("password", "hash"))
-                .thenReturn(true);
+        when(passwordEncoder.encode("password123"))
+                .thenReturn("password-hash");
 
-        User result = userService.authenticate(request);
+        User savedUser = mock(User.class);
 
-        assertSame(user, result);
+        when(savedUser.getId()).thenReturn(1L);
+        when(savedUser.getEmail()).thenReturn("dom@example.com");
+        when(savedUser.getFirstName()).thenReturn("Dom");
+        when(savedUser.getLastName()).thenReturn("Rita");
 
-        verify(userRepository)
-                .findByEmail("dom@example.com");
+        when(userRepository.saveAndFlush(any(User.class)))
+                .thenReturn(savedUser);
+
+        RegisterResponse response = userService.register(request);
+
+        // Controlla i dati restituiti.
+        assertEquals(1L, response.id());
+        assertEquals("dom@example.com", response.email());
+        assertEquals("Dom", response.firstName());
+        assertEquals("Rita", response.lastName());
+
+        // Controlla cosa viene realmente passato al Repository.
+        ArgumentCaptor<User> captor =
+                ArgumentCaptor.forClass(User.class);
+
+        verify(userRepository).saveAndFlush(captor.capture());
+
+        User created = captor.getValue();
+
+        assertEquals("dom@example.com", created.getEmail());
+        assertEquals("password-hash", created.getPasswordHash());
+        assertEquals("Dom", created.getFirstName());
+        assertEquals("Rita", created.getLastName());
+
+        // La password originale non deve essere salvata.
+        assertNotEquals("password123", created.getPasswordHash());
+
+        verify(passwordEncoder).encode("password123");
     }
 
+    /*
+     * Verifica che un'email già registrata
+     * impedisca la creazione di un nuovo account.
+     */
     @Test
-    void emailInesistenteVieneRifiutata() {
+    void registrazioneEmailDuplicataVieneRifiutata() {
 
-        LoginRequest request =
-                new LoginRequest("unknown@example.com", "password");
-
-        when(userRepository.findByEmail("unknown@example.com"))
-                .thenReturn(Optional.empty());
-
-        assertThrows(
-                BadCredentialsException.class,
-                () -> userService.authenticate(request)
+        RegisterRequest request = new RegisterRequest(
+                "  DOM@EXAMPLE.COM  ",
+                "password123",
+                "Dom",
+                "Rita"
         );
 
-        // Non viene nemmeno controllata la password.
+        when(userRepository.existsByEmail("dom@example.com"))
+                .thenReturn(true);
+
+        assertThrows(
+                EmailAlreadyRegisteredException.class,
+                () -> userService.register(request)
+        );
+
+        // Non deve generare password né salvare utenti.
         verifyNoInteractions(passwordEncoder);
-    }
 
-    @Test
-    void passwordSbagliataVieneRifiutata() {
-
-        LoginRequest request =
-                new LoginRequest("dom@example.com", "sbagliata");
-
-        User user = new User(
-                "dom@example.com", "hash", null, null
-        );
-
-        when(userRepository.findByEmail("dom@example.com"))
-                .thenReturn(Optional.of(user));
-
-        assertThrows(
-                BadCredentialsException.class,
-                () -> userService.authenticate(request)
-        );
-
-        verify(passwordEncoder)
-                .matches("sbagliata", "hash");
-    }
-
-    @Test
-    void accountNonAttivoVieneRifiutato() {
-
-        // Seleziona uno stato diverso da ACTIVE.
-        AccountStatus nonActive = Arrays.stream(
-                        AccountStatus.values()
-                )
-                .filter(status -> status != AccountStatus.ACTIVE)
-                .findFirst()
-                .orElseThrow();
-
-        LoginRequest request =
-                new LoginRequest("dom@example.com", "password");
-
-        User user = mock(User.class);
-
-        when(user.getPasswordHash()).thenReturn("hash");
-        when(user.getAccountStatus()).thenReturn(nonActive);
-
-        when(userRepository.findByEmail("dom@example.com"))
-                .thenReturn(Optional.of(user));
-
-        when(passwordEncoder.matches("password", "hash"))
-                .thenReturn(true);
-
-        assertThrows(
-                BadCredentialsException.class,
-                () -> userService.authenticate(request)
-        );
+        verify(userRepository, never())
+                .saveAndFlush(any(User.class));
     }
 }

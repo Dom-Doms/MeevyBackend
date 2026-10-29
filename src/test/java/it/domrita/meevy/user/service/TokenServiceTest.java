@@ -1,6 +1,7 @@
 
 package it.domrita.meevy.user.service;
 
+import it.domrita.meevy.auth.service.TokenService;
 import it.domrita.meevy.user.model.User;
 
 import org.junit.jupiter.api.BeforeEach;
