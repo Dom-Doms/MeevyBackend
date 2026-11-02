@@ -189,7 +189,7 @@ class PersonalPomodoroControllerTest {
                 any(PomodoroSettings.class)
         )).thenReturn(session);
 
-        mockMvc.perform(patch(BASE + "/{id}", SESSION_ID)
+        mockMvc.perform(patch(BASE + "/{id}/update", SESSION_ID)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(VALID_REQUEST))
 
