@@ -61,7 +61,7 @@ public class SubjectService {
         Long userId = currentUserIdProvider.getCurrentUserId();
 
         Subject subject = subjectRepository
-                .findById(subjectId) //cerca la materia tramite l'id
+                .findByIdAndUser_Id(subjectId, userId) //cerca la materia tramite l'id
                 .orElseThrow(()-> new SubjectNotFoundException(subjectId)); //se non trovata lancia l'eccezione
 
         return toResponse(subject);
