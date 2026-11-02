@@ -18,9 +18,7 @@ services:
       start_period: 15s
 
   backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/dom-doms/meevybackend:${MEEVY_IMAGE_TAG:-deploy}
     restart: unless-stopped
     depends_on:
       postgres:
