@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_DB: meevy
       POSTGRES_USER: ${DB_USERNAME:?DB_USERNAME missing in .env}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD missing in .env}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?D B_PASSWORD missing in .env}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
