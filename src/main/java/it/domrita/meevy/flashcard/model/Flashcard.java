@@ -25,4 +25,42 @@ public class Flashcard {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "subject_id")
+    private Subject subject;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String question;
+
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String answer;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
+    //Imposta le date alla creazione.
+    @PrePersist //Viene eseguito prima dell'inserimento nel database
+    private void onCreate() {
+        Instant now = Instant.now();
+        createdAt = now;
+        updatedAt = now;
+    }
+
+    //Aggiorna la flashcard quando viene modificata
+    @PreUpdate //Viene eseguito prima dell'aggiornamento
+    private void onUpdate() {
+        updatedAt = Instant.now();
+    }
+
+    //crea uan nuova flashcard
+    public Flashcard(User user, Subject subject, String question, String answer) {
+        this.user = user;
+        this.subject = subject;
+        this.question = question;
+        this.answer = answer;
+    }
 }
