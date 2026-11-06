@@ -1,6 +1,7 @@
 package it.domrita.meevy.flashcard.service;
 
 import it.domrita.meevy.auth.repository.CurrentUserIdProvider;
+import it.domrita.meevy.flashcard.controller.FlashcardController;
 import it.domrita.meevy.flashcard.dto.FlashcardRequest;
 import it.domrita.meevy.flashcard.dto.FlashcardResponse;
 import it.domrita.meevy.flashcard.model.Flashcard;
@@ -14,6 +15,7 @@ import it.domrita.meevy.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import it.domrita.meevy.flashcard.exception.FlashcardNotFoundException;
 import java.util.List;
 
 @Service
@@ -43,15 +45,7 @@ public class FlashcardService {
         Flashcard savedFlashcard = new Flashcard(user, subject, request.question().trim(), request.answer().trim());
 
         //restituisce i dati della flashcard creata
-        return new FlashcardResponse(
-                savedFlashcard.getId(),
-                subject.getId(),
-                savedFlashcard.getQuestion(),
-                savedFlashcard.getAnswer(),
-                savedFlashcard.getCreatedAt(),
-                savedFlashcard.getUpdatedAt()
-
-        );
+        return toResponse(savedFlashcard);
 
 
     }
@@ -62,15 +56,97 @@ public class FlashcardService {
         Long userId = currentUserIdProvider.getCurrentUserId();
 
         return flashcardRepository.findAllByUser_IdOrderByIdAsc(userId)
-                .stream().map(flashcard -> new FlashcardResponse(
-                        flashcard.getId(),
-                        flashcard.getSubject() != null ? //se la flashcard ha la materia associata, restituisci l'id della materia, altrimenti null
-                                flashcard.getSubject().getId() : null,
-                        flashcard.getQuestion(),
-                        flashcard.getAnswer(),
-                        flashcard.getCreatedAt(),
-                        flashcard.getUpdatedAt()
-                ))
+                .stream()
+                .map(this::toResponse)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<FlashcardResponse> getFlashcardsBySubjectId(Long subjectId) {
+
+        Long userId = currentUserIdProvider.getCurrentUserId();
+
+        subjectRepository.findByIdAndUser_Id(subjectId, userId)
+                .orElseThrow(() -> new SubjectNotFoundException(subjectId));
+
+        return flashcardRepository
+                .findAllByUser_IdAndSubject_IdOrderByIdAsc(userId, subjectId)
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public FlashcardResponse getFlashcardById(Long id) {
+
+        Long userId = currentUserIdProvider.getCurrentUserId();
+
+        Flashcard flashcard = flashcardRepository.findByIdAndUser_Id(id, userId)
+                .orElseThrow(() -> new FlashcardNotFoundException(id));
+
+        return toResponse(flashcard);
+
+    }
+
+    public FlashcardResponse updateFlashcard(Long id, FlashcardRequest request) {
+
+        Long userId = currentUserIdProvider.getCurrentUserId();
+
+        Flashcard flashcard = flashcardRepository
+                .findByIdAndUser_Id(id, userId)
+                .orElseThrow(() -> new FlashcardNotFoundException(id));
+
+        flashcard.updateContent(
+                request.question().trim(),
+                request.answer().trim()
+        );
+
+        Flashcard updatedFlashcard = flashcardRepository.saveAndFlush(flashcard);
+
+        return toResponse(updatedFlashcard);
+    }
+
+    public void deleteFlashcard(Long id) {
+
+        Long userId = currentUserIdProvider.getCurrentUserId();
+
+        Flashcard flashcard = flashcardRepository
+                .findByIdAndUser_Id(id, userId)
+                .orElseThrow(() -> new FlashcardNotFoundException(id));
+
+        flashcardRepository.delete(flashcard);
+    }
+
+    public FlashcardResponse duplicateFlashcard(Long id) {
+
+        Long userId = currentUserIdProvider.getCurrentUserId();
+
+        Flashcard original = flashcardRepository
+                .findByIdAndUser_Id(id, userId)
+                .orElseThrow(()-> new FlashcardNotFoundException(id));
+
+        Flashcard duplicate = new Flashcard(
+                original.getUser(),
+                original.getSubject(),
+                original.getQuestion(),
+                original.getAnswer()
+        );
+
+        Flashcard savedDuplicate = flashcardRepository.save(duplicate);
+
+        return toResponse(savedDuplicate);
+    }
+
+    private FlashcardResponse toResponse(Flashcard flashcard) {
+
+        return new FlashcardResponse(
+                flashcard.getId(),
+                flashcard.getSubject() != null
+                        ? flashcard.getSubject().getId() : null,
+                flashcard.getQuestion(),
+                flashcard.getAnswer(),
+                flashcard.getCreatedAt(),
+                flashcard.getUpdatedAt()
+        );
     }
 }

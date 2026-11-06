@@ -63,4 +63,9 @@ public class Flashcard {
         this.question = question;
         this.answer = answer;
     }
+
+    public void updateContent(String question, String answer) {
+        this.question = question;
+        this.answer = answer;
+    }
 }
