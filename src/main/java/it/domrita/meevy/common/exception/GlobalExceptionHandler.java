@@ -20,6 +20,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import it.domrita.meevy.subject.exception.SubjectNotFoundException;
+import it.domrita.meevy.group.exception.*;
 
 import it.domrita.meevy.resource.exception.InvalidResourceException;
 import it.domrita.meevy.resource.exception.ResourceNotFoundException;
@@ -252,6 +253,76 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
     }
+
+
+// GROUPS
+
+    @ExceptionHandler(GroupNotFoundException.class)
+    public ProblemDetail handleGroupNotFound(
+            GroupNotFoundException ex
+    ) {
+        return createProblem(
+                HttpStatus.NOT_FOUND,
+                "GROUP_NOT_FOUND",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(GroupMemberNotFoundException.class)
+    public ProblemDetail handleGroupMemberNotFound(
+            GroupMemberNotFoundException ex
+    ) {
+        return createProblem(
+                HttpStatus.NOT_FOUND,
+                "GROUP_MEMBER_NOT_FOUND",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(GroupAccessDeniedException.class)
+    public ProblemDetail handleGroupAccessDenied(
+            GroupAccessDeniedException ex
+    ) {
+        return createProblem(
+                HttpStatus.FORBIDDEN,
+                "GROUP_ACCESS_DENIED",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(InvalidGroupRoleException.class)
+    public ProblemDetail handleInvalidGroupRole(
+            InvalidGroupRoleException ex
+    ) {
+        return createProblem(
+                HttpStatus.BAD_REQUEST,
+                "INVALID_GROUP_ROLE",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(OwnerCannotLeaveException.class)
+    public ProblemDetail handleOwnerCannotLeave(
+            OwnerCannotLeaveException ex
+    ) {
+        return createProblem(
+                HttpStatus.CONFLICT,
+                "OWNER_CANNOT_LEAVE",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(InvalidOwnershipTransferException.class)
+    public ProblemDetail handleInvalidOwnershipTransfer(
+            InvalidOwnershipTransferException ex
+    ) {
+        return createProblem(
+                HttpStatus.CONFLICT,
+                "INVALID_OWNERSHIP_TRANSFER",
+                ex.getMessage()
+        );
+    }
+
 
 
 }
