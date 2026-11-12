@@ -41,8 +41,11 @@ public class FlashcardService {
                 .findByIdAndUser_Id(request.subjectId(), userId)
                 .orElseThrow(() -> new SubjectNotFoundException(request.subjectId()));
 
+        //crea la flashcard
+        Flashcard flashcard = new Flashcard(user, subject, request.question().trim(), request.answer().trim());
+
         //salva la flashcard nel database
-        Flashcard savedFlashcard = new Flashcard(user, subject, request.question().trim(), request.answer().trim());
+        Flashcard savedFlashcard = flashcardRepository.save(flashcard);
 
         //restituisce i dati della flashcard creata
         return toResponse(savedFlashcard);
