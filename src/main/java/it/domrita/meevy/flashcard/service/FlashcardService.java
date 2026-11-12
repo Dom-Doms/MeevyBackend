@@ -1,5 +1,6 @@
 package it.domrita.meevy.flashcard.service;
 
+import it.domrita.meevy.flashcard.dto.FlashcardUpdateRequest;
 import it.domrita.meevy.auth.repository.CurrentUserIdProvider;
 import it.domrita.meevy.flashcard.controller.FlashcardController;
 import it.domrita.meevy.flashcard.dto.FlashcardRequest;
@@ -91,7 +92,7 @@ public class FlashcardService {
 
     }
 
-    public FlashcardResponse updateFlashcard(Long id, FlashcardRequest request) {
+    public FlashcardResponse updateFlashcard(Long id, FlashcardUpdateRequest request) {
 
         Long userId = currentUserIdProvider.getCurrentUserId();
 
