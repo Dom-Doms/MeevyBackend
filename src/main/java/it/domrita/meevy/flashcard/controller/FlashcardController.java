@@ -3,6 +3,7 @@ package it.domrita.meevy.flashcard.controller;
 
 import it.domrita.meevy.flashcard.dto.FlashcardRequest;
 import it.domrita.meevy.flashcard.dto.FlashcardResponse;
+import it.domrita.meevy.flashcard.dto.FlashcardUpdateRequest;
 import it.domrita.meevy.flashcard.exception.FlashcardNotFoundException;
 import it.domrita.meevy.flashcard.model.Flashcard;
 import it.domrita.meevy.flashcard.repository.FlashcardRepository;
@@ -71,7 +72,7 @@ public class FlashcardController {
 
     @PutMapping("/{id}")
     public ResponseEntity<FlashcardResponse> updateFlashcard(
-            @PathVariable Long id, @Valid @RequestBody FlashcardRequest request) {
+            @PathVariable Long id, @Valid @RequestBody FlashcardUpdateRequest request) {
 
         FlashcardResponse response = flashcardService.updateFlashcard(id, request);
 
