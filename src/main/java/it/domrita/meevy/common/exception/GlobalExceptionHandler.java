@@ -324,5 +324,55 @@ public class GlobalExceptionHandler {
     }
 
 
+//GROUP INVITATIONS
+
+    @ExceptionHandler(InvalidGroupInvitationException.class)
+    public ProblemDetail handleInvalidGroupInvitation(
+            InvalidGroupInvitationException ex
+    ) {
+        return createProblem(
+                HttpStatus.NOT_FOUND,
+                "INVALID_GROUP_INVITATION",
+                ex.getMessage()
+        );
+    }
+
+
+    @ExceptionHandler(GroupInvitationExpiredException.class)
+    public ProblemDetail handleGroupInvitationExpired(
+            GroupInvitationExpiredException ex
+    ) {
+        return createProblem(
+                HttpStatus.GONE,
+                "GROUP_INVITATION_EXPIRED",
+                ex.getMessage()
+        );
+    }
+
+
+    @ExceptionHandler(GroupInvitationUsedException.class)
+    public ProblemDetail handleGroupInvitationUsed(
+            GroupInvitationUsedException ex
+    ) {
+        return createProblem(
+                HttpStatus.CONFLICT,
+                "GROUP_INVITATION_USED",
+                ex.getMessage()
+        );
+    }
+
+
+    @ExceptionHandler(AlreadyGroupMemberException.class)
+    public ProblemDetail handleAlreadyGroupMember(
+            AlreadyGroupMemberException ex
+    ) {
+        return createProblem(
+                HttpStatus.CONFLICT,
+                "ALREADY_GROUP_MEMBER",
+                ex.getMessage()
+        );
+    }
+
+
 
 }
