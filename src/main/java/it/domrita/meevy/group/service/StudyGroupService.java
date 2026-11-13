@@ -98,7 +98,7 @@ public class StudyGroupService {
         GroupMembership membership =
                 getCurrentMembership(groupId, userId);
 
-        requireOwner(membership);
+        requireOwner(membership); //controlla che un utente sia owner per modificarlo
 
         group.updateDetails(
                 request.name().trim(),
