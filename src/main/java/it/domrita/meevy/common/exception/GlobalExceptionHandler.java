@@ -5,12 +5,14 @@ import it.domrita.meevy.user.exception.EmailAlreadyRegisteredException;
 import it.domrita.meevy.pomodoro.personal.exception.PersonalPomodoroNotFoundException;
 import it.domrita.meevy.pomodoro.personal.exception.PersonalPomodoroAlreadyActiveException;
 import it.domrita.meevy.pomodoro.personal.exception.PersonalPomodoroInvalidStateException;
+import it.domrita.meevy.checklist.exception.ChecklistItemNotFoundException;
 
 import it.domrita.meevy.auth.exception.InvalidRefreshTokenException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import it.domrita.meevy.checklist.exception.ChecklistNotFoundException;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -373,6 +375,29 @@ public class GlobalExceptionHandler {
         );
     }
 
+// CHECKLIST
 
+    @ExceptionHandler(ChecklistNotFoundException.class)
+    public ProblemDetail handleChecklistNotFound(
+            ChecklistNotFoundException ex
+    ) {
+        return createProblem(
+                HttpStatus.NOT_FOUND,
+                "CHECKLIST_NOT_FOUND",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(ChecklistItemNotFoundException.class)
+    public ProblemDetail handleChecklistItemNotFound(
+            ChecklistItemNotFoundException ex
+    ) {
+
+        return createProblem(
+                HttpStatus.NOT_FOUND,
+                "CHECKLIST_ITEM_NOT_FOUND",
+                ex.getMessage()
+        );
+    }
 
 }
