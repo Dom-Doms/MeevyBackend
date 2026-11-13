@@ -20,6 +20,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import it.domrita.meevy.subject.exception.SubjectNotFoundException;
+import it.domrita.meevy.group.exception.*;
+
+import it.domrita.meevy.resource.exception.InvalidResourceException;
+import it.domrita.meevy.resource.exception.ResourceNotFoundException;
+import it.domrita.meevy.resource.exception.ResourceStorageException;
+
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -195,5 +203,176 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
     }
+
+    /*
+     * RESOURCES
+     */
+
+    // Il file non esiste oppure non appartiene all'utente
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ProblemDetail handleResourceNotFound(
+            ResourceNotFoundException ex
+    ) {
+        return createProblem(
+                HttpStatus.NOT_FOUND,
+                "RESOURCE_NOT_FOUND",
+                ex.getMessage()
+        );
+    }
+
+    // File vuoto, nome non valido o altri errori nei dati ricevuti
+    @ExceptionHandler(InvalidResourceException.class)
+    public ProblemDetail handleInvalidResource(
+            InvalidResourceException ex
+    ) {
+        return createProblem(
+                HttpStatus.BAD_REQUEST,
+                "INVALID_RESOURCE",
+                ex.getMessage()
+        );
+    }
+
+    // Il documento supera il limite configurato per l'upload
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ProblemDetail handleMaxUploadSize() {
+        return createProblem(
+                HttpStatus.PAYLOAD_TOO_LARGE,
+                "FILE_TOO_LARGE",
+                "Il file supera la dimensione massima consentita."
+        );
+    }
+
+    // Problemi nella lettura o scrittura sul disco
+    @ExceptionHandler(ResourceStorageException.class)
+    public ProblemDetail handleResourceStorageError(
+            ResourceStorageException ex
+    ) {
+        return createProblem(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "RESOURCE_STORAGE_ERROR",
+                ex.getMessage()
+        );
+    }
+
+
+// GROUPS
+
+    @ExceptionHandler(GroupNotFoundException.class)
+    public ProblemDetail handleGroupNotFound(
+            GroupNotFoundException ex
+    ) {
+        return createProblem(
+                HttpStatus.NOT_FOUND,
+                "GROUP_NOT_FOUND",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(GroupMemberNotFoundException.class)
+    public ProblemDetail handleGroupMemberNotFound(
+            GroupMemberNotFoundException ex
+    ) {
+        return createProblem(
+                HttpStatus.NOT_FOUND,
+                "GROUP_MEMBER_NOT_FOUND",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(GroupAccessDeniedException.class)
+    public ProblemDetail handleGroupAccessDenied(
+            GroupAccessDeniedException ex
+    ) {
+        return createProblem(
+                HttpStatus.FORBIDDEN,
+                "GROUP_ACCESS_DENIED",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(InvalidGroupRoleException.class)
+    public ProblemDetail handleInvalidGroupRole(
+            InvalidGroupRoleException ex
+    ) {
+        return createProblem(
+                HttpStatus.BAD_REQUEST,
+                "INVALID_GROUP_ROLE",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(OwnerCannotLeaveException.class)
+    public ProblemDetail handleOwnerCannotLeave(
+            OwnerCannotLeaveException ex
+    ) {
+        return createProblem(
+                HttpStatus.CONFLICT,
+                "OWNER_CANNOT_LEAVE",
+                ex.getMessage()
+        );
+    }
+
+    @ExceptionHandler(InvalidOwnershipTransferException.class)
+    public ProblemDetail handleInvalidOwnershipTransfer(
+            InvalidOwnershipTransferException ex
+    ) {
+        return createProblem(
+                HttpStatus.CONFLICT,
+                "INVALID_OWNERSHIP_TRANSFER",
+                ex.getMessage()
+        );
+    }
+
+
+//GROUP INVITATIONS
+
+    @ExceptionHandler(InvalidGroupInvitationException.class)
+    public ProblemDetail handleInvalidGroupInvitation(
+            InvalidGroupInvitationException ex
+    ) {
+        return createProblem(
+                HttpStatus.NOT_FOUND,
+                "INVALID_GROUP_INVITATION",
+                ex.getMessage()
+        );
+    }
+
+
+    @ExceptionHandler(GroupInvitationExpiredException.class)
+    public ProblemDetail handleGroupInvitationExpired(
+            GroupInvitationExpiredException ex
+    ) {
+        return createProblem(
+                HttpStatus.GONE,
+                "GROUP_INVITATION_EXPIRED",
+                ex.getMessage()
+        );
+    }
+
+
+    @ExceptionHandler(GroupInvitationUsedException.class)
+    public ProblemDetail handleGroupInvitationUsed(
+            GroupInvitationUsedException ex
+    ) {
+        return createProblem(
+                HttpStatus.CONFLICT,
+                "GROUP_INVITATION_USED",
+                ex.getMessage()
+        );
+    }
+
+
+    @ExceptionHandler(AlreadyGroupMemberException.class)
+    public ProblemDetail handleAlreadyGroupMember(
+            AlreadyGroupMemberException ex
+    ) {
+        return createProblem(
+                HttpStatus.CONFLICT,
+                "ALREADY_GROUP_MEMBER",
+                ex.getMessage()
+        );
+    }
+
+
 
 }

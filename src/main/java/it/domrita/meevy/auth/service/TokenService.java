@@ -9,15 +9,9 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.HexFormat;
-
+import it.domrita.meevy.common.security.OpaqueTokenGenerator;
 /*
  * Gestisce la creazione dei token di autenticazione.
  *
@@ -46,8 +40,6 @@ public class TokenService {
 
     private final JwtEncoder jwtEncoder;
     private final String issuer;
-
-    private final SecureRandom secureRandom = new SecureRandom();
 
     /*
      * Spring fornisce il JwtEncoder configurato
@@ -91,51 +83,21 @@ public class TokenService {
         ).getTokenValue();
     }
 
-    /*
-     * Genera un refresh token casuale.
-     *
-     * Non è un JWT: è una stringa imprevedibile
-     * che verrà conservata dal client.
-     */
+    //Genera un refresh token casuale che verrà mantenuto dal client
     public String generateRefreshToken() {
 
-        byte[] randomBytes = new byte[32];
-        secureRandom.nextBytes(randomBytes);
-
-        return Base64.getUrlEncoder()
-                .withoutPadding()
-                .encodeToString(randomBytes);
+        return OpaqueTokenGenerator.generate();
     }
 
-    /*
-     * Calcola l'hash SHA-256 del refresh token.
-     *
-     * Salveremo questo hash nel database,
-     * non il token originale.
-     */
+    //Calcola l'hash del refresh token che salviamo nel db
     public String hashRefreshToken(String refreshToken) {
 
-        try {
-            MessageDigest digest =
-                    MessageDigest.getInstance("SHA-256");
-
-            byte[] hash = digest.digest(
-                    refreshToken.getBytes(StandardCharsets.UTF_8)
-            );
-
-            return HexFormat.of().formatHex(hash);
-
-        } catch (NoSuchAlgorithmException ex) {
-            throw new IllegalStateException(
-                    "Algoritmo SHA-256 non disponibile.",
-                    ex
-            );
-        }
+        return OpaqueTokenGenerator.hash(refreshToken);
     }
 
-    /*
-     * Calcola quando deve scadere un refresh token.
-     */
+
+     //Calcola quando deve scadere un refresh token.
+
     public Instant calculateRefreshExpiration() {
         return Instant.now().plus(REFRESH_TOKEN_DURATION);
     }

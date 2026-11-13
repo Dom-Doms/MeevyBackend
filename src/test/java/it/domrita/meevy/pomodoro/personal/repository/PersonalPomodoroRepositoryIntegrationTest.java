@@ -151,38 +151,28 @@ class PersonalPomodoroRepositoryIntegrationTest {
 
         Long sessionId = session.getId();
         Long userId = user.getId();
+        Long subjectId = subject.getId();
 
-
-        /*
-         * Svuota il contesto di persistenza.
-         * La sessione Pomodoro rimane salvata nel database,
-         * ma non è più gestita in memoria da Hibernate.
-         */
         entityManager.clear();
 
-        /*
-         * Ricarica la Subject e la elimina.
-         * PostgreSQL applicherà ON DELETE SET NULL
-         * alla sessione Pomodoro associata.
-         */
-        Subject subjectToDelete =
-                entityManager.find(Subject.class, subject.getId());
+        // Elimina la materia direttamente tramite JPQL.
+        int deleted = entityManager.createQuery(
+                        "DELETE FROM Subject s WHERE s.id = :id"
+                )
+                .setParameter("id", subjectId)
+                .executeUpdate();
 
-        entityManager.remove(subjectToDelete);
-        entityManager.flush();
+        assertEquals(1, deleted);
 
-        /*
-         * Svuota nuovamente il contesto per verificare
-         * i dati effettivamente presenti nel database.
-         */
         entityManager.clear();
 
-
+        // Verifica che la sessione sia ancora presente.
         PersonalPomodoroSession reloaded =
                 repository.findByIdAndUser_Id(
                         sessionId, userId
                 ).orElseThrow();
 
+        // La materia deve essere NULL.
         assertNull(reloaded.getSubject());
         assertEquals(sessionId, reloaded.getId());
     }
