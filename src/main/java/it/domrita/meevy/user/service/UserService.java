@@ -17,12 +17,23 @@ import org.springframework.stereotype.Service;
 import java.util.Locale;
 import java.util.Optional;
 
+
+
+import it.domrita.meevy.auth.repository.CurrentUserIdProvider;
+import it.domrita.meevy.user.dto.UserProfileResponse;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CurrentUserIdProvider currentUserIdProvider;
 
     public RegisterResponse register(RegisterRequest request) {
 
@@ -75,6 +86,37 @@ public class UserService {
     }
 
 
+
+    /*
+     * Recupera il profilo dell'utente autenticato.
+     *
+     * L'identificativo viene ottenuto dal JWT già
+     * verificato da Spring Security.
+     *
+     * Non riceviamo l'ID dal client, perché un utente
+     * non deve poter richiedere il profilo di un altro.
+     */
+    @Transactional(readOnly = true)
+    public UserProfileResponse getCurrentProfile() {
+
+        Long userId = currentUserIdProvider.getCurrentUserId();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Utente autenticato non trovato."
+                ));
+
+        // Convertiamo l'Entity nei soli dati esposti al frontend.
+        return new UserProfileResponse(
+                user.getId(),
+                user.getEmail(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPlatformRole(),
+                user.getAccountStatus()
+        );
+    }
 
 
 }
