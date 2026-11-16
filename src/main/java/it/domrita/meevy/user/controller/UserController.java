@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import it.domrita.meevy.user.dto.UserProfileResponse;
+
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -37,4 +39,18 @@ public class UserController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+
+
+    // GET /user/me
+     //Restituisce le informazioni dell'utente autenticato.
+
+    @GetMapping("/me")
+    public ResponseEntity<UserProfileResponse> getCurrentProfile() {
+
+        UserProfileResponse response =
+                userService.getCurrentProfile();
+
+        return ResponseEntity.ok(response);
+    }
+
 }
