@@ -6,6 +6,7 @@ import it.domrita.meevy.pomodoro.personal.exception.PersonalPomodoroNotFoundExce
 import it.domrita.meevy.pomodoro.personal.exception.PersonalPomodoroAlreadyActiveException;
 import it.domrita.meevy.pomodoro.personal.exception.PersonalPomodoroInvalidStateException;
 import it.domrita.meevy.checklist.exception.ChecklistItemNotFoundException;
+import it.domrita.meevy.chat.exception.InvalidGroupMessageException;
 
 import it.domrita.meevy.auth.exception.InvalidRefreshTokenException;
 import org.springframework.core.Ordered;
@@ -399,5 +400,20 @@ public class GlobalExceptionHandler {
                 ex.getMessage()
         );
     }
+
+
+
+    // Parametri di paginazione della chat non validi.
+    @ExceptionHandler(InvalidGroupMessageException.class)
+    public ProblemDetail handleInvalidGroupMessage(
+            InvalidGroupMessageException ex
+    ) {
+        return createProblem(
+                HttpStatus.BAD_REQUEST,
+                "INVALID_GROUP_MESSAGE",
+                ex.getMessage()
+        );
+    }
+
 
 }
