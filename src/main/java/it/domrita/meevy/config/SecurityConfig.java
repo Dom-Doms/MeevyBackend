@@ -77,6 +77,9 @@ public class SecurityConfig {
                         // Permette di restituire gli errori HTTP.
                         .requestMatchers("/error").permitAll()
 
+                        // L'handshake e' pubblico; il JWT viene verificato nel CONNECT STOMP.
+                        .requestMatchers(HttpMethod.GET, "/ws/chat").permitAll()
+
                         // Tutti gli altri endpoint richiedono JWT.
                         .anyRequest().authenticated()
                 )

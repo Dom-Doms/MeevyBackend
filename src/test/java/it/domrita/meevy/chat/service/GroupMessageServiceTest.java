@@ -23,6 +23,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.test.util.ReflectionTestUtils;
 
+//websocket
+import org.springframework.context.ApplicationEventPublisher;
+import it.domrita.meevy.chat.websocket.GroupMessageCreatedEvent;
+
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +43,8 @@ class GroupMessageServiceTest {
     @Mock private StudyGroupRepository studyGroupRepository;
     @Mock private UserRepository userRepository;
     @Mock private CurrentUserIdProvider currentUserIdProvider;
+    @Mock//websocket
+    private ApplicationEventPublisher eventPublisher;
     @InjectMocks private GroupMessageService groupMessageService;
 
     private StudyGroup group;
@@ -69,16 +75,21 @@ class GroupMessageServiceTest {
         GroupMessageResponse response = groupMessageService.sendMessage(
                 10L, new GroupMessageRequest("  Ciao gruppo!  ")
         );
-
+        //assertEquals() controllano i valori restituiti
         assertEquals(50L, response.id());
         assertEquals(10L, response.groupId());
         assertEquals(2L, response.senderUserId());
         assertEquals("Rita", response.senderFirstName());
         assertEquals("Ciao gruppo!", response.content());
         assertEquals(NOW, response.createdAt());
-
+        //websocket
+        verify(eventPublisher).publishEvent(
+                new GroupMessageCreatedEvent(10L, 50L)
+        );
+        //verify() controlla che sia stato chiamato un metodo
+        //InOrder verifica invece l'ordine delle operazioni.
         // Non basta il controllo: il lock deve arrivare PRIMA della membership.
-        InOrder inOrder = inOrder(studyGroupRepository, groupMembershipRepository);
+        InOrder inOrder = inOrder(studyGroupRepository, groupMembershipRepository);//
         inOrder.verify(studyGroupRepository).findByIdForUpdate(10L);
         inOrder.verify(groupMembershipRepository).existsByGroup_IdAndUser_Id(10L, 2L);
     }

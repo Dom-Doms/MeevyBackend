@@ -4,6 +4,9 @@ package it.domrita.meevy.group.repository;
 import it.domrita.meevy.group.model.GroupMembership;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+//websocket
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,5 +37,15 @@ public interface GroupMembershipRepository
     boolean existsByGroup_IdAndUser_Id(
             Long groupId,
             Long userId
+    );
+
+    // Recupera gli ID dei membri senza caricare gli oggetti User.
+    @Query("""
+        SELECT m.user.id
+        FROM GroupMembership m
+        WHERE m.group.id = :groupId
+        """)
+    List<Long> findMemberUserIdsByGroupId(
+            @Param("groupId") Long groupId
     );
 }

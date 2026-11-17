@@ -21,6 +21,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+//websocket
+import it.domrita.meevy.chat.websocket.GroupMessageCreatedEvent;
+import org.springframework.context.ApplicationEventPublisher;
+
 @Service
 @RequiredArgsConstructor
 public class GroupMessageService {
@@ -30,6 +34,8 @@ public class GroupMessageService {
     private final StudyGroupRepository studyGroupRepository;
     private final UserRepository userRepository;
     private final CurrentUserIdProvider currentUserIdProvider;
+    //wwbsocket
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public GroupMessageResponse sendMessage(Long groupId, GroupMessageRequest request) {
@@ -67,6 +73,11 @@ public class GroupMessageService {
         );
 
         GroupMessage saved = groupMessageRepository.saveAndFlush(message);
+
+        // Sara' notificato solo se la transazione termina correttamente.
+        eventPublisher.publishEvent(
+                new GroupMessageCreatedEvent(groupId, saved.getId())
+        );
 
         return toResponse(saved);
     }
